@@ -32,6 +32,8 @@
             listViewProducts = new ListView();
             imageList1 = new ImageList(components);
             Checkout = new Panel();
+            buttonPanelAdmin = new Button();
+            buttonRemove = new Button();
             listViewReceipt = new ListView();
             sumLabel = new Label();
             ZaplacButton = new Button();
@@ -41,7 +43,6 @@
             panel2 = new Panel();
             ZaloguhButton = new Button();
             EnterNameTextbox = new TextBox();
-            buttonRemove = new Button();
             Checkout.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -64,6 +65,7 @@
             // 
             // Checkout
             // 
+            Checkout.Controls.Add(buttonPanelAdmin);
             Checkout.Controls.Add(buttonRemove);
             Checkout.Controls.Add(listViewReceipt);
             Checkout.Controls.Add(sumLabel);
@@ -74,6 +76,24 @@
             Checkout.Name = "Checkout";
             Checkout.Size = new Size(353, 399);
             Checkout.TabIndex = 1;
+            // 
+            // buttonPanelAdmin
+            // 
+            buttonPanelAdmin.Location = new Point(143, 347);
+            buttonPanelAdmin.Name = "buttonPanelAdmin";
+            buttonPanelAdmin.Size = new Size(100, 23);
+            buttonPanelAdmin.TabIndex = 6;
+            buttonPanelAdmin.Text = "admin UwU \U0001f979";
+            buttonPanelAdmin.UseVisualStyleBackColor = true;
+            // 
+            // buttonRemove
+            // 
+            buttonRemove.Location = new Point(249, 347);
+            buttonRemove.Name = "buttonRemove";
+            buttonRemove.Size = new Size(95, 23);
+            buttonRemove.TabIndex = 5;
+            buttonRemove.Text = "Usuń produkt";
+            buttonRemove.UseVisualStyleBackColor = true;
             // 
             // listViewReceipt
             // 
@@ -163,15 +183,6 @@
             EnterNameTextbox.Size = new Size(160, 23);
             EnterNameTextbox.TabIndex = 0;
             // 
-            // buttonRemove
-            // 
-            buttonRemove.Location = new Point(249, 347);
-            buttonRemove.Name = "buttonRemove";
-            buttonRemove.Size = new Size(95, 23);
-            buttonRemove.TabIndex = 5;
-            buttonRemove.Text = "Usuń produkt";
-            buttonRemove.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -203,5 +214,6 @@
         private Label sumLabel;
         private ListView listViewReceipt;
         private Button buttonRemove;
+        private Button buttonPanelAdmin;
     }
 }

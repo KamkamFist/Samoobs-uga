@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Net;
 using System.Windows.Forms;
 
@@ -14,6 +13,9 @@ namespace Samoobsługa
         // koszyk: nazwa produktu -> (cena, ilość)
         private Dictionary<string, (decimal Price, int Quantity)> cart = new Dictionary<string, (decimal, int)>();
         private Dictionary<string, decimal> productPrices = new Dictionary<string, decimal>();
+
+        // lista produktów dla AdminPanel i ListView
+        private List<Product> products;
 
         public Form1()
         {
@@ -36,6 +38,9 @@ namespace Samoobsługa
             // przycisk usuń
             buttonRemove.Click += ButtonRemove_Click;
 
+            // przycisk panel admina
+            buttonPanelAdmin.Click += ButtonPanelAdmin_Click;
+
             LoadProducts();
         }
 
@@ -49,28 +54,29 @@ namespace Samoobsługa
             totalSum = 0m;
             sumLabel.Text = "Suma: 0.00 zł";
 
-            var products = new List<(string Name, string Category, decimal Price, string ImageUrl)>
+            // lista produktów
+            products = new List<Product>
             {
-                ("Chleb pszenny", "Pieczywo", 4.20m, "https://pngimg.com/uploads/bread/bread_PNG2271.png"),
-                ("Bułka kajzerka", "Pieczywo", 0.70m, "https://pngimg.com/uploads/bread/small/bread_PNG2277.png"),
-                ("Chleb żytni", "Pieczywo", 5.80m, "https://pngimg.com/uploads/bread/small/bread_PNG2297.png"),
-                ("Bagietka", "Pieczywo", 3.10m, "https://pngimg.com/uploads/baguette/baguette_PNG30.png"),
-                ("Czekolada mleczna", "Słodycze", 3.50m, "https://pngimg.com/uploads/chocolate/small/chocolate_PNG97202.png"),
-                ("Baton karmelowy", "Słodycze", 2.20m, "https://pngimg.com/uploads/chocolate/chocolate_PNG97193.png"),
-                ("Ciastka maślane", "Słodycze", 4.80m, "https://pngimg.com/uploads/cookie/small/cookie_PNG97341.png"),
-                ("Wafel czekoladowy", "Słodycze", 1.80m, "https://pngimg.com/uploads/waffle/waffle_PNG23.png"),
-                ("Marchew", "Warzywa", 2.70m, "https://pngimg.com/uploads/carrot/carrot_PNG4986.png"),
-                ("Pomidor", "Warzywa", 3.90m, "https://pngimg.com/uploads/tomato/tomato_PNG12592.png"),
-                ("Cebula", "Warzywa", 1.40m, "https://pngimg.com/uploads/onion/small/onion_PNG3824.png"),
-                ("Ogórek", "Warzywa", 2.10m, "https://pngimg.com/uploads/cucumber/small/cucumber_PNG12617.png"),
-                ("Jabłko", "Owoce", 1.90m, "https://pngimg.com/uploads/apple/apple_PNG12406.png"),
-                ("Banany", "Owoce", 4.40m, "https://pngimg.com/uploads/banana/banana_PNG842.png"),
-                ("Winogrona", "Owoce", 7.80m, "https://pngimg.com/uploads/aston_martin/aston_martin_PNG50.png"),
-                ("Pomarańcza", "Owoce", 3.10m, "https://pngimg.com/uploads/orange/orange_PNG800.png"),
-                ("Bułka słodka", "Pieczywo", 1.50m, "https://pngimg.com/uploads/croissant/small/croissant_PNG46720.png"),
-                ("Drożdżówka", "Pieczywo", 2.30m, "https://pngimg.com/uploads/easter_cake/small/easter_cake_PNG14.png"),
-                ("Czekoladki", "Słodycze", 6.90m, "https://pngimg.com/uploads/m_m/small/m_m_PNG60.png"),
-                ("Sałata", "Warzywa", 3.00m, "https://image.shutterstock.com/image-photo/fresh-ripe-cabbage-vegetable-isolated-260nw-2624180029.jpg")
+                new Product { Name = "Chleb pszenny", Category = "Pieczywo", Price = 4.20m, ImageUrl = "https://pngimg.com/uploads/bread/bread_PNG2271.png" },
+                new Product { Name = "Bułka kajzerka", Category = "Pieczywo", Price = 0.70m, ImageUrl = "https://pngimg.com/uploads/bread/small/bread_PNG2277.png" },
+                new Product { Name = "Chleb żytni", Category = "Pieczywo", Price = 5.80m, ImageUrl = "https://pngimg.com/uploads/bread/small/bread_PNG2297.png" },
+                new Product { Name = "Bagietka", Category = "Pieczywo", Price = 3.10m, ImageUrl = "https://pngimg.com/uploads/baguette/baguette_PNG30.png" },
+                new Product { Name = "Czekolada mleczna", Category = "Słodycze", Price = 3.50m, ImageUrl = "https://pngimg.com/uploads/chocolate/small/chocolate_PNG97202.png" },
+                new Product { Name = "Baton karmelowy", Category = "Słodycze", Price = 2.20m, ImageUrl = "https://pngimg.com/uploads/chocolate/chocolate_PNG97193.png" },
+                new Product { Name = "Ciastka maślane", Category = "Słodycze", Price = 4.80m, ImageUrl = "https://pngimg.com/uploads/cookie/small/cookie_PNG97341.png" },
+                new Product { Name = "Wafel czekoladowy", Category = "Słodycze", Price = 1.80m, ImageUrl = "https://pngimg.com/uploads/waffle/waffle_PNG23.png" },
+                new Product { Name = "Marchew", Category = "Warzywa", Price = 2.70m, ImageUrl = "https://pngimg.com/uploads/carrot/carrot_PNG4986.png" },
+                new Product { Name = "Pomidor", Category = "Warzywa", Price = 3.90m, ImageUrl = "https://pngimg.com/uploads/tomato/tomato_PNG12592.png" },
+                new Product { Name = "Cebula", Category = "Warzywa", Price = 1.40m, ImageUrl = "https://pngimg.com/uploads/onion/small/onion_PNG3824.png" },
+                new Product { Name = "Ogórek", Category = "Warzywa", Price = 2.10m, ImageUrl = "https://pngimg.com/uploads/cucumber/small/cucumber_PNG12617.png" },
+                new Product { Name = "Jabłko", Category = "Owoce", Price = 1.90m, ImageUrl = "https://pngimg.com/uploads/apple/apple_PNG12406.png" },
+                new Product { Name = "Banany", Category = "Owoce", Price = 4.40m, ImageUrl = "https://pngimg.com/uploads/banana/banana_PNG842.png" },
+                new Product { Name = "Winogrona", Category = "Owoce", Price = 7.80m, ImageUrl = "https://pngimg.com/uploads/aston_martin/aston_martin_PNG50.png" },
+                new Product { Name = "Pomarańcza", Category = "Owoce", Price = 3.10m, ImageUrl = "https://pngimg.com/uploads/orange/orange_PNG800.png" },
+                new Product { Name = "Bułka słodka", Category = "Pieczywo", Price = 1.50m, ImageUrl = "https://pngimg.com/uploads/croissant/small/croissant_PNG46720.png" },
+                new Product { Name = "Drożdżówka", Category = "Pieczywo", Price = 2.30m, ImageUrl = "https://pngimg.com/uploads/easter_cake/small/easter_cake_PNG14.png" },
+                new Product { Name = "Czekoladki", Category = "Słodycze", Price = 6.90m, ImageUrl = "https://pngimg.com/uploads/m_m/small/m_m_PNG60.png" },
+                new Product { Name = "Sałata", Category = "Warzywa", Price = 3.00m, ImageUrl = "https://image.shutterstock.com/image-photo/fresh-ripe-cabbage-vegetable-isolated-260nw-2624180029.jpg" }
             };
 
             WebClient wc = new WebClient();
@@ -81,7 +87,7 @@ namespace Samoobsługa
                 try
                 {
                     byte[] bytes = wc.DownloadData(p.ImageUrl);
-                    using (var ms = new MemoryStream(bytes))
+                    using (var ms = new System.IO.MemoryStream(bytes))
                     {
                         imageList1.Images.Add(Image.FromStream(ms));
                     }
@@ -105,8 +111,7 @@ namespace Samoobsługa
 
         private void ListViewProducts_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listViewProducts.SelectedItems.Count == 0)
-                return;
+            if (listViewProducts.SelectedItems.Count == 0) return;
 
             var item = listViewProducts.SelectedItems[0];
             string name = item.Text.Split('\n')[0];
@@ -147,8 +152,7 @@ namespace Samoobsługa
 
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
-            if (listViewReceipt.SelectedItems.Count == 0)
-                return;
+            if (listViewReceipt.SelectedItems.Count == 0) return;
 
             var selectedItem = listViewReceipt.SelectedItems[0];
             string name = selectedItem.Text;
@@ -163,5 +167,27 @@ namespace Samoobsługa
 
             RefreshReceipt();
         }
+
+        private void ButtonPanelAdmin_Click(object sender, EventArgs e)
+        {
+            AdminPanel ap = new AdminPanel(products); // przekazujemy listę produktów
+            ap.Show();
+        }
+
+        
+        }
+
+        
+    }
+
+
+
+    // klasa Product
+    public class Product
+    {
+        public string Name { get; set; }
+        public string Category { get; set; }
+        public decimal Price { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

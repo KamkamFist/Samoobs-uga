@@ -1,0 +1,51 @@
+[
+  {
+    "Name": "Jabłko",
+    "Price": 1.40,
+    "Category": "Owoce",
+    "ImageUrl": "https://pngimg.com/uploads/apple/apple_PNG12489.png"
+  },
+  {
+    "Name": "Gruszka",
+    "Price": 1.90,
+    "Category": "Owoce",
+    "ImageUrl": "https://pngimg.com/uploads/pear/pear_PNG3542.png"
+  },
+  {
+    "Name": "Chleb",
+    "Price": 3.50,
+    "Category": "Pieczywo",
+    "ImageUrl": "https://pngimg.com/uploads/bread/bread_PNG2271.png"
+  },
+  {
+    "Name": "Bułka",
+    "Price": 0.90,
+    "Category": "Pieczywo",
+    "ImageUrl": "https://pngimg.com/uploads/bun/bun_PNG7848.png"
+  },
+  {
+    "Name": "Czekolada",
+    "Price": 4.20,
+    "Category": "Słodycze",
+    "ImageUrl": "https://pngimg.com/uploads/chocolate/chocolate_PNG97183.png"
+  },
+  {
+    "Name": "Baton",
+    "Price": 2.50,
+    "Category": "Słodycze",
+    "ImageUrl": "https://pngimg.com/uploads/chocolate_bar/chocolate_bar_PNG47.png"
+  },
+  {
+    "Name": "Pomidor",
+    "Price": 1.80,
+    "Category": "Warzywa",
+    "ImageUrl": "https://pngimg.com/uploads/tomato/tomato_PNG12595.png"
+  },
+  {
+    "Name": "Ogórek",
+    "Price": 1.20,
+    "Category": "Warzywa",
+    "ImageUrl": "https://pngimg.com/uploads/cucumber/cucumber_PNG8425.png"
+  }
+
+]
