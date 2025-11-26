@@ -1,51 +1,122 @@
 [
   {
-    "Name": "Jabłko",
-    "Price": 1.40,
-    "Category": "Owoce",
-    "ImageUrl": "https://pngimg.com/uploads/apple/apple_PNG12489.png"
-  },
-  {
-    "Name": "Gruszka",
-    "Price": 1.90,
-    "Category": "Owoce",
-    "ImageUrl": "https://pngimg.com/uploads/pear/pear_PNG3542.png"
-  },
-  {
-    "Name": "Chleb",
-    "Price": 3.50,
+    "Name": "Chleb pszenny",
     "Category": "Pieczywo",
+    "Price": 4.20,
     "ImageUrl": "https://pngimg.com/uploads/bread/bread_PNG2271.png"
   },
   {
-    "Name": "Bułka",
-    "Price": 0.90,
+    "Name": "Bułka kajzerka",
     "Category": "Pieczywo",
-    "ImageUrl": "https://pngimg.com/uploads/bun/bun_PNG7848.png"
+    "Price": 0.70,
+    "ImageUrl": "https://pngimg.com/uploads/bread/small/bread_PNG2277.png"
   },
   {
-    "Name": "Czekolada",
-    "Price": 4.20,
-    "Category": "Słodycze",
-    "ImageUrl": "https://pngimg.com/uploads/chocolate/chocolate_PNG97183.png"
+    "Name": "Chleb żytni",
+    "Category": "Pieczywo",
+    "Price": 5.80,
+    "ImageUrl": "https://pngimg.com/uploads/bread/small/bread_PNG2297.png"
   },
   {
-    "Name": "Baton",
-    "Price": 2.50,
+    "Name": "Bagietka",
+    "Category": "Pieczywo",
+    "Price": 3.10,
+    "ImageUrl": "https://pngimg.com/uploads/baguette/baguette_PNG30.png"
+  },
+  {
+    "Name": "Czekolada mleczna",
     "Category": "Słodycze",
-    "ImageUrl": "https://pngimg.com/uploads/chocolate_bar/chocolate_bar_PNG47.png"
+    "Price": 3.50,
+    "ImageUrl": "https://pngimg.com/uploads/chocolate/small/chocolate_PNG97202.png"
+  },
+  {
+    "Name": "Baton karmelowy",
+    "Category": "Słodycze",
+    "Price": 2.20,
+    "ImageUrl": "https://pngimg.com/uploads/chocolate/chocolate_PNG97193.png"
+  },
+  {
+    "Name": "Ciastka maślane",
+    "Category": "Słodycze",
+    "Price": 4.80,
+    "ImageUrl": "https://pngimg.com/uploads/cookie/small/cookie_PNG97341.png"
+  },
+  {
+    "Name": "Wafel czekoladowy",
+    "Category": "Słodycze",
+    "Price": 1.80,
+    "ImageUrl": "https://pngimg.com/uploads/waffle/waffle_PNG23.png"
+  },
+  {
+    "Name": "Marchew",
+    "Category": "Warzywa",
+    "Price": 2.70,
+    "ImageUrl": "https://pngimg.com/uploads/carrot/carrot_PNG4986.png"
   },
   {
     "Name": "Pomidor",
-    "Price": 1.80,
     "Category": "Warzywa",
-    "ImageUrl": "https://pngimg.com/uploads/tomato/tomato_PNG12595.png"
+    "Price": 3.90,
+    "ImageUrl": "https://pngimg.com/uploads/tomato/tomato_PNG12592.png"
+  },
+  {
+    "Name": "Cebula",
+    "Category": "Warzywa",
+    "Price": 1.40,
+    "ImageUrl": "https://pngimg.com/uploads/onion/small/onion_PNG3824.png"
   },
   {
     "Name": "Ogórek",
-    "Price": 1.20,
     "Category": "Warzywa",
-    "ImageUrl": "https://pngimg.com/uploads/cucumber/cucumber_PNG8425.png"
+    "Price": 2.10,
+    "ImageUrl": "https://pngimg.com/uploads/cucumber/small/cucumber_PNG12617.png"
+  },
+  {
+    "Name": "Jabłko",
+    "Category": "Owoce",
+    "Price": 1.90,
+    "ImageUrl": "https://pngimg.com/uploads/apple/apple_PNG12406.png"
+  },
+  {
+    "Name": "Banany",
+    "Category": "Owoce",
+    "Price": 4.40,
+    "ImageUrl": "https://pngimg.com/uploads/banana/banana_PNG842.png"
+  },
+  {
+    "Name": "Winogrona",
+    "Category": "Owoce",
+    "Price": 7.80,
+    "ImageUrl": "https://pngimg.com/uploads/aston_martin/aston_martin_PNG50.png"
+  },
+  {
+    "Name": "Pomarańcza",
+    "Category": "Owoce",
+    "Price": 3.10,
+    "ImageUrl": "https://pngimg.com/uploads/orange/orange_PNG800.png"
+  },
+  {
+    "Name": "Bułka słodka",
+    "Category": "Pieczywo",
+    "Price": 1.50,
+    "ImageUrl": "https://pngimg.com/uploads/croissant/small/croissant_PNG46720.png"
+  },
+  {
+    "Name": "Drożdżówka",
+    "Category": "Pieczywo",
+    "Price": 2.30,
+    "ImageUrl": "https://pngimg.com/uploads/easter_cake/small/easter_cake_PNG14.png"
+  },
+  {
+    "Name": "Czekoladki",
+    "Category": "Słodycze",
+    "Price": 6.90,
+    "ImageUrl": "https://pngimg.com/uploads/m_m/small/m_m_PNG60.png"
+  },
+  {
+    "Name": "Sałata",
+    "Category": "Warzywa",
+    "Price": 3.00,
+    "ImageUrl": "https://image.shutterstock.com/image-photo/fresh-ripe-cabbage-vegetable-isolated-260nw-2624180029.jpg"
   }
-
 ]

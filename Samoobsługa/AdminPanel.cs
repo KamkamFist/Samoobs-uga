@@ -1,5 +1,8 @@
-﻿using System;
+﻿// AdminPanel.cs
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Windows.Forms;
 
 namespace Samoobsługa
@@ -7,109 +10,163 @@ namespace Samoobsługa
     public partial class AdminPanel : Form
     {
         private List<Product> products;
+        private const string ProductFile = "products.json";
 
         public AdminPanel(List<Product> products)
         {
             InitializeComponent();
-            this.products = products;
+            this.products = products ?? new List<Product>();
 
-            // ustawienia listView
+            // setup listView (columns are also in Designer but keeping refresh here)
             listViewAdmin.View = View.Details;
             listViewAdmin.FullRowSelect = true;
-            listViewAdmin.Columns.Add("Nazwa", 150);
+            listViewAdmin.Columns.Clear();
+            listViewAdmin.Columns.Add("Nazwa", 160);
             listViewAdmin.Columns.Add("Kategoria", 100);
             listViewAdmin.Columns.Add("Cena", 70);
 
-            RefreshListView();
-
-            buttonAdd.Click += ButtonAdd_Click;
-            buttonRemove.Click += ButtonRemove_Click;
+            RefreshList();
         }
 
-        private void RefreshListView()
+        private void RefreshList()
         {
             listViewAdmin.Items.Clear();
             foreach (var p in products)
             {
-                ListViewItem item = new ListViewItem(p.Name);
-                item.SubItems.Add(p.Category);
-                item.SubItems.Add(p.Price.ToString("0.00"));
-                listViewAdmin.Items.Add(item);
+                var lvi = new ListViewItem(p.Name);
+                lvi.SubItems.Add(p.Category);
+                lvi.SubItems.Add(p.Price.ToString("0.00"));
+                lvi.Tag = p;
+                listViewAdmin.Items.Add(lvi);
             }
         }
 
-        private void ButtonAdd_Click(object sender, EventArgs e)
+        private void buttonAdd_Click(object sender, EventArgs e)
         {
-            // proste okienko do dodania nowego produktu
-            using (Form addForm = new Form())
+            // open simple dialog to add product
+            using (var form = new Form())
             {
-                addForm.Text = "Dodaj produkt";
-                addForm.Width = 300;
-                addForm.Height = 220;
+                form.Text = "Dodaj produkt";
+                form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                form.StartPosition = FormStartPosition.CenterParent;
+                form.ClientSize = new System.Drawing.Size(420, 200);
 
-                Label nameLabel = new Label() { Text = "Nazwa:", Left = 10, Top = 20, Width = 80 };
-                TextBox nameBox = new TextBox() { Left = 100, Top = 20, Width = 150 };
+                var lblName = new Label { Text = "Nazwa:", Left = 10, Top = 15, AutoSize = true };
+                var txtName = new TextBox { Left = 100, Top = 12, Width = 300 };
 
-                Label categoryLabel = new Label() { Text = "Kategoria:", Left = 10, Top = 60, Width = 80 };
-                TextBox categoryBox = new TextBox() { Left = 100, Top = 60, Width = 150 };
+                var lblCategory = new Label { Text = "Kategoria:", Left = 10, Top = 50, AutoSize = true };
+                var txtCategory = new TextBox { Left = 100, Top = 46, Width = 300 };
 
-                Label priceLabel = new Label() { Text = "Cena:", Left = 10, Top = 100, Width = 80 };
-                TextBox priceBox = new TextBox() { Left = 100, Top = 100, Width = 150 };
+                var lblPrice = new Label { Text = "Cena:", Left = 10, Top = 85, AutoSize = true };
+                var numPrice = new NumericUpDown { Left = 100, Top = 82, Width = 120, DecimalPlaces = 2, Maximum = 10000, Minimum = 0 };
 
-                Label urlLabel = new Label() { Text = "URL obrazu:", Left = 10, Top = 140, Width = 80 };
-                TextBox urlBox = new TextBox() { Left = 100, Top = 140, Width = 150 };
+                var lblUrl = new Label { Text = "URL obrazka:", Left = 10, Top = 120, AutoSize = true };
+                var txtUrl = new TextBox { Left = 100, Top = 116, Width = 300 };
 
-                Button okButton = new Button() { Text = "Dodaj", Left = 100, Top = 170, Width = 80 };
-                okButton.DialogResult = DialogResult.OK;
+                var btnOk = new Button { Text = "Dodaj", Left = 100, Top = 150, DialogResult = DialogResult.OK };
+                form.Controls.AddRange(new Control[] { lblName, txtName, lblCategory, txtCategory, lblPrice, numPrice, lblUrl, txtUrl, btnOk });
+                form.AcceptButton = btnOk;
 
-                addForm.Controls.Add(nameLabel);
-                addForm.Controls.Add(nameBox);
-                addForm.Controls.Add(categoryLabel);
-                addForm.Controls.Add(categoryBox);
-                addForm.Controls.Add(priceLabel);
-                addForm.Controls.Add(priceBox);
-                addForm.Controls.Add(urlLabel);
-                addForm.Controls.Add(urlBox);
-                addForm.Controls.Add(okButton);
-
-                addForm.AcceptButton = okButton;
-
-                if (addForm.ShowDialog() == DialogResult.OK)
+                if (form.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (decimal.TryParse(priceBox.Text, out decimal price))
+                    if (string.IsNullOrWhiteSpace(txtName.Text))
                     {
-                        Product newProduct = new Product()
-                        {
-                            Name = nameBox.Text,
-                            Category = categoryBox.Text,
-                            Price = price,
-                            ImageUrl = urlBox.Text
-                        };
-                        products.Add(newProduct);
-                        RefreshListView();
+                        MessageBox.Show("Podaj nazwę produktu.");
+                        return;
                     }
-                    else
+
+                    var newP = new Product
                     {
-                        MessageBox.Show("Niepoprawna cena!");
-                    }
+                        Name = txtName.Text.Trim(),
+                        Category = txtCategory.Text.Trim(),
+                        Price = numPrice.Value,
+                        ImageUrl = txtUrl.Text.Trim()
+                    };
+
+                    products.Add(newP);
+                    SaveAndRefresh();
                 }
             }
         }
 
-        private void ButtonRemove_Click(object sender, EventArgs e)
+        private void buttonEdit_Click(object sender, EventArgs e)
         {
-            if (listViewAdmin.SelectedItems.Count == 0)
-                return;
+            if (listViewAdmin.SelectedItems.Count == 0) return;
+            var sel = listViewAdmin.SelectedItems[0];
+            var p = sel.Tag as Product;
+            if (p == null) return;
 
-            var selectedItem = listViewAdmin.SelectedItems[0];
-            string name = selectedItem.Text;
-
-            var productToRemove = products.Find(p => p.Name == name);
-            if (productToRemove != null)
+            using (var form = new Form())
             {
-                products.Remove(productToRemove);
-                RefreshListView();
+                form.Text = "Edytuj produkt";
+                form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                form.StartPosition = FormStartPosition.CenterParent;
+                form.ClientSize = new System.Drawing.Size(420, 200);
+
+                var lblName = new Label { Text = "Nazwa:", Left = 10, Top = 15, AutoSize = true };
+                var txtName = new TextBox { Left = 100, Top = 12, Width = 300, Text = p.Name };
+
+                var lblCategory = new Label { Text = "Kategoria:", Left = 10, Top = 50, AutoSize = true };
+                var txtCategory = new TextBox { Left = 100, Top = 46, Width = 300, Text = p.Category };
+
+                var lblPrice = new Label { Text = "Cena:", Left = 10, Top = 85, AutoSize = true };
+                var numPrice = new NumericUpDown { Left = 100, Top = 82, Width = 120, DecimalPlaces = 2, Maximum = 10000, Minimum = 0, Value = p.Price };
+
+                var lblUrl = new Label { Text = "URL obrazka:", Left = 10, Top = 120, AutoSize = true };
+                var txtUrl = new TextBox { Left = 100, Top = 116, Width = 300, Text = p.ImageUrl };
+
+                var btnOk = new Button { Text = "Zapisz", Left = 100, Top = 150, DialogResult = DialogResult.OK };
+                form.Controls.AddRange(new Control[] { lblName, txtName, lblCategory, txtCategory, lblPrice, numPrice, lblUrl, txtUrl, btnOk });
+                form.AcceptButton = btnOk;
+
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    p.Name = txtName.Text.Trim();
+                    p.Category = txtCategory.Text.Trim();
+                    p.Price = numPrice.Value;
+                    p.ImageUrl = txtUrl.Text.Trim();
+                    SaveAndRefresh();
+                }
             }
         }
+
+        private void buttonDelete_Click(object sender, EventArgs e)
+        {
+            if (listViewAdmin.SelectedItems.Count == 0) return;
+            var sel = listViewAdmin.SelectedItems[0];
+            var p = sel.Tag as Product;
+            if (p == null) return;
+
+            var res = MessageBox.Show($"Usunąć produkt '{p.Name}' ?", "Potwierdź", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (res == DialogResult.Yes)
+            {
+                products.Remove(p);
+                SaveAndRefresh();
+            }
+        }
+
+        private void SaveAndRefresh()
+        {
+            try
+            {
+                string json = JsonSerializer.Serialize(products, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(ProductFile, json);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Błąd zapisu: " + ex.Message);
+            }
+
+            RefreshList();
+            // close with OK so Form1 knows to reload (we'll return DialogResult.OK on close button)
+        }
+
+        // Close button handler (set DialogResult.OK to signal changes saved)
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+
     }
 }

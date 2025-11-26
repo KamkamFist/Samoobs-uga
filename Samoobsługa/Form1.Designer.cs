@@ -36,7 +36,7 @@
             buttonRemove = new Button();
             listViewReceipt = new ListView();
             sumLabel = new Label();
-            ZaplacButton = new Button();
+            buttonPay = new Button();
             Znizka = new Label();
             listView1 = new ListView();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -69,7 +69,7 @@
             Checkout.Controls.Add(buttonRemove);
             Checkout.Controls.Add(listViewReceipt);
             Checkout.Controls.Add(sumLabel);
-            Checkout.Controls.Add(ZaplacButton);
+            Checkout.Controls.Add(buttonPay);
             Checkout.Controls.Add(Znizka);
             Checkout.Controls.Add(listView1);
             Checkout.Location = new Point(801, 48);
@@ -112,15 +112,16 @@
             sumLabel.TabIndex = 3;
             sumLabel.Text = "Do zapłaty: ";
             // 
-            // ZaplacButton
+            // buttonPay
             // 
-            ZaplacButton.Dock = DockStyle.Bottom;
-            ZaplacButton.Location = new Point(0, 376);
-            ZaplacButton.Name = "ZaplacButton";
-            ZaplacButton.Size = new Size(353, 23);
-            ZaplacButton.TabIndex = 1;
-            ZaplacButton.Text = "Zaplac ";
-            ZaplacButton.UseVisualStyleBackColor = true;
+            buttonPay.Dock = DockStyle.Bottom;
+            buttonPay.Location = new Point(0, 376);
+            buttonPay.Name = "buttonPay";
+            buttonPay.Size = new Size(353, 23);
+            buttonPay.TabIndex = 1;
+            buttonPay.Text = "Zaplac ";
+            buttonPay.UseVisualStyleBackColor = true;
+            buttonPay.Click += ButtonPay_Click;
             // 
             // Znizka
             // 
@@ -203,7 +204,7 @@
 
         private ListView listViewProducts;
         private Panel Checkout;
-        private Button ZaplacButton;
+        private Button buttonPay;
         private Label Znizka;
         private ListView listView1;
         private TableLayoutPanel tableLayoutPanel1;

@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
+// Product.cs
+namespace Samoobsługa
+{
     public class Product
     {
-        public string ProductName { get; set; }      // zamiast Name
-        public string ProductCategory { get; set; }  // zamiast Category
-        public decimal ProductPrice { get; set; }    // zamiast Price
-        public string ProductImageUrl { get; set; }  // zamiast ImageUrl
+        public string Name { get; set; }
+        public string Category { get; set; }
+        public decimal Price { get; set; }
+        public string ImageUrl { get; set; }
     }
-
+}
+    
