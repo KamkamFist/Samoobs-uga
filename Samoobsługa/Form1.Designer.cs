@@ -37,11 +37,12 @@
             listViewReceipt = new ListView();
             sumLabel = new Label();
             buttonPay = new Button();
-            Znizka = new Label();
+            labelDiscount = new Label();
             listView1 = new ListView();
             tableLayoutPanel1 = new TableLayoutPanel();
             panel2 = new Panel();
-            ZaloguhButton = new Button();
+            labelLoggedAs = new Label();
+            buttonLogin = new Button();
             EnterNameTextbox = new TextBox();
             Checkout.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -70,7 +71,7 @@
             Checkout.Controls.Add(listViewReceipt);
             Checkout.Controls.Add(sumLabel);
             Checkout.Controls.Add(buttonPay);
-            Checkout.Controls.Add(Znizka);
+            Checkout.Controls.Add(labelDiscount);
             Checkout.Controls.Add(listView1);
             Checkout.Location = new Point(801, 48);
             Checkout.Name = "Checkout";
@@ -123,15 +124,15 @@
             buttonPay.UseVisualStyleBackColor = true;
             buttonPay.Click += ButtonPay_Click;
             // 
-            // Znizka
+            // labelDiscount
             // 
-            Znizka.AutoSize = true;
-            Znizka.Location = new Point(3, 338);
-            Znizka.MinimumSize = new Size(100, 0);
-            Znizka.Name = "Znizka";
-            Znizka.Size = new Size(100, 15);
-            Znizka.TabIndex = 2;
-            Znizka.Text = "Znizka: 30%";
+            labelDiscount.AutoSize = true;
+            labelDiscount.Location = new Point(3, 338);
+            labelDiscount.MinimumSize = new Size(100, 0);
+            labelDiscount.Name = "labelDiscount";
+            labelDiscount.Size = new Size(100, 15);
+            labelDiscount.TabIndex = 2;
+            labelDiscount.Text = "Zniżka: 0%";
             // 
             // listView1
             // 
@@ -161,21 +162,31 @@
             // 
             // panel2
             // 
-            panel2.Controls.Add(ZaloguhButton);
+            panel2.Controls.Add(labelLoggedAs);
+            panel2.Controls.Add(buttonLogin);
             panel2.Controls.Add(EnterNameTextbox);
             panel2.Location = new Point(3, 3);
             panel2.Name = "panel2";
             panel2.Size = new Size(792, 39);
             panel2.TabIndex = 3;
             // 
-            // ZaloguhButton
+            // labelLoggedAs
             // 
-            ZaloguhButton.Location = new Point(169, 2);
-            ZaloguhButton.Name = "ZaloguhButton";
-            ZaloguhButton.Size = new Size(75, 23);
-            ZaloguhButton.TabIndex = 1;
-            ZaloguhButton.Text = "Zaloguj";
-            ZaloguhButton.UseVisualStyleBackColor = true;
+            labelLoggedAs.AutoSize = true;
+            labelLoggedAs.Location = new Point(280, 3);
+            labelLoggedAs.Name = "labelLoggedAs";
+            labelLoggedAs.Size = new Size(0, 15);
+            labelLoggedAs.TabIndex = 2;
+            // 
+            // buttonLogin
+            // 
+            buttonLogin.Location = new Point(169, 2);
+            buttonLogin.Name = "buttonLogin";
+            buttonLogin.Size = new Size(75, 23);
+            buttonLogin.TabIndex = 1;
+            buttonLogin.Text = "Zaloguj";
+            buttonLogin.UseVisualStyleBackColor = true;
+            buttonLogin.Click += ButtonLogin_Click;
             // 
             // EnterNameTextbox
             // 
@@ -205,16 +216,17 @@
         private ListView listViewProducts;
         private Panel Checkout;
         private Button buttonPay;
-        private Label Znizka;
+        private Label labelDiscount;
         private ListView listView1;
         private TableLayoutPanel tableLayoutPanel1;
         private Panel panel2;
-        private Button ZaloguhButton;
+        private Button buttonLogin;
         private TextBox EnterNameTextbox;
         private ImageList imageList1;
         private Label sumLabel;
         private ListView listViewReceipt;
         private Button buttonRemove;
         private Button buttonPanelAdmin;
+        private Label labelLoggedAs;
     }
 }

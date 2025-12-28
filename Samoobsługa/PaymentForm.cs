@@ -62,7 +62,7 @@ namespace Samoobsługa
             }
 
             // Zapisz paragon do pliku
-            mainForm.SaveReceiptToFile();
+            //mainForm.SaveReceiptToFile();
 
             // Wyczyść koszyk i zaktualizuj listę
             mainForm.cart.Clear();

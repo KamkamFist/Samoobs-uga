@@ -1,31 +1,31 @@
-// Form1.cs
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace Samoobsługa
 {
     public partial class Form1 : Form
     {
-        private const string ProductFile = "products.json";
+        private const string ApiBaseUrl = "https://localhost:7217/";
 
         private List<Product> products = new List<Product>();
         public Dictionary<string, (decimal Price, int Quantity)> cart = new Dictionary<string, (decimal, int)>();
-        public Dictionary<string, decimal> productPrices = new Dictionary<string, decimal>();
         private decimal totalSum = 0m;
+
+        private User loggedUser = null;
 
         public Form1()
         {
             InitializeComponent();
-
-            // ensure ImageList size (optional, can be set in Designer)
+            // ustawienia listview i imagelist (designer jest mega obsrany wiec zapytalem chata, blagam o wybaczenie za ten kod)
             imageList1.ImageSize = new Size(96, 96);
 
-            // configure list views
             listViewProducts.View = View.LargeIcon;
             listViewProducts.LargeImageList = imageList1;
             listViewProducts.MultiSelect = false;
@@ -33,131 +33,105 @@ namespace Samoobsługa
 
             listViewReceipt.View = View.Details;
             listViewReceipt.Columns.Clear();
-            listViewReceipt.Columns.Add("Produkt", 160);
+            listViewReceipt.Columns.Add("Produkt", 130);
             listViewReceipt.Columns.Add("Cena", 70);
             listViewReceipt.Columns.Add("Ilość", 60);
             listViewReceipt.Columns.Add("Wartość", 80);
             listViewReceipt.FullRowSelect = true;
             listViewReceipt.GridLines = true;
 
-            // events
-            buttonRemove.Click += ButtonRemove_Click;
-            buttonPanelAdmin.Click += ButtonPanelAdmin_Click;
 
-            // load
-            LoadProductsFromFile();
-            RefreshProductCatalog();
-        }
+            _ = LoadProductsFromApi();
 
-        // --- FILE IO: load / save products.json ---
-
-        private void LoadProductsFromFile()
-        {
-            try
+            // ten wariat odsiweza co sekubde (troche malo ae dizla nawet git wiec zostawiam)
+            System.Windows.Forms.Timer refreshTimer = new System.Windows.Forms.Timer();
+            refreshTimer.Interval = 1000;
+            refreshTimer.Tick += async (s, e) =>
             {
-                if (!File.Exists(ProductFile))
+                if (loggedUser != null)
                 {
-                    products = GetDefaultProducts();
-                    SaveProductsToFile();
-                    return;
+                    await RefreshLoggedUserData();
                 }
+            };
+            refreshTimer.Start();
 
-                string json = File.ReadAllText(ProductFile);
-                var read = JsonSerializer.Deserialize<List<Product>>(json);
-                products = read ?? GetDefaultProducts();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Błąd podczas wczytywania products.json:\n" + ex.Message);
-                products = GetDefaultProducts();
-            }
+
+
+
         }
 
-        private void SaveProductsToFile()
+        //mam 4 godzinna lobotomie przez te rozje**** zdjcia. poddaje sie 
+        private async Task LoadProductsFromApi()
         {
             try
             {
-                string json = JsonSerializer.Serialize(products, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(ProductFile, json);
+                using HttpClient client = new HttpClient(); 
+                var apiProducts = await client.GetFromJsonAsync<List<Product>>(ApiBaseUrl + "products");
+
+                if (apiProducts != null)
+                {
+                    products = apiProducts;
+                    await RefreshProductCatalog();
+                }
+                else
+                {
+                    MessageBox.Show("Brak produktów z API.");
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Błąd podczas zapisu products.json:\n" + ex.Message);
+                MessageBox.Show("Błąd przy pobieraniu produktów z API: " + ex.Message);
             }
         }
 
-        private List<Product> GetDefaultProducts()
+        private async Task RefreshProductCatalog()
         {
-            return new List<Product>
-            {
-                new Product { Name="Chleb pszenny", Category="Pieczywo", Price=4.20m, ImageUrl="https://pngimg.com/uploads/bread/bread_PNG2271.png" },
-                new Product { Name="Bułka kajzerka", Category="Pieczywo", Price=0.70m, ImageUrl="https://pngimg.com/uploads/bread/small/bread_PNG2277.png" },
-                new Product { Name="Chleb żytni", Category="Pieczywo", Price=5.80m, ImageUrl="https://pngimg.com/uploads/bread/small/bread_PNG2297.png" },
-                new Product { Name="Bagietka", Category="Pieczywo", Price=3.10m, ImageUrl="https://pngimg.com/uploads/baguette/baguette_PNG30.png" },
-                new Product { Name="Czekolada mleczna", Category="Słodycze", Price=3.50m, ImageUrl="https://pngimg.com/uploads/chocolate/small/chocolate_PNG97202.png" },
-                new Product { Name="Baton karmelowy", Category="Słodycze", Price=2.20m, ImageUrl="https://pngimg.com/uploads/chocolate/chocolate_PNG97193.png" },
-                new Product { Name="Ciastka maślane", Category="Słodycze", Price=4.80m, ImageUrl="https://pngimg.com/uploads/cookie/small/cookie_PNG97341.png" },
-                new Product { Name="Wafel czekoladowy", Category="Słodycze", Price=1.80m, ImageUrl="https://pngimg.com/uploads/waffle/waffle_PNG23.png" },
-                new Product { Name="Marchew", Category="Warzywa", Price=2.70m, ImageUrl="https://pngimg.com/uploads/carrot/carrot_PNG4986.png" },
-                new Product { Name="Pomidor", Category="Warzywa", Price=3.90m, ImageUrl="https://pngimg.com/uploads/tomato/tomato_PNG12592.png" },
-                new Product { Name="Cebula", Category="Warzywa", Price=1.40m, ImageUrl="https://pngimg.com/uploads/onion/small/onion_PNG3824.png" },
-                new Product { Name="Ogórek", Category="Warzywa", Price=2.10m, ImageUrl="https://pngimg.com/uploads/cucumber/small/cucumber_PNG12617.png" },
-                new Product { Name="Jabłko", Category="Owoce", Price=1.90m, ImageUrl="https://pngimg.com/uploads/apple/apple_PNG12406.png" },
-                new Product { Name="Banany", Category="Owoce", Price=4.40m, ImageUrl="https://pngimg.com/uploads/banana/banana_PNG842.png" },
-                new Product { Name="Winogrona", Category="Owoce", Price=7.80m, ImageUrl="https://pngimg.com/uploads/aston_martin/aston_martin_PNG50.png" },
-                new Product { Name="Pomarańcza", Category="Owoce", Price=3.10m, ImageUrl="https://pngimg.com/uploads/orange/orange_PNG800.png" },
-                new Product { Name="Bułka słodka", Category="Pieczywo", Price=1.50m, ImageUrl="https://pngimg.com/uploads/croissant/small/croissant_PNG46720.png" },
-                new Product { Name="Drożdżówka", Category="Pieczywo", Price=2.30m, ImageUrl="https://pngimg.com/uploads/easter_cake/small/easter_cake_PNG14.png" },
-                new Product { Name="Czekoladki", Category="Słodycze", Price=6.90m, ImageUrl="https://pngimg.com/uploads/m_m/small/m_m_PNG60.png" },
-                new Product { Name="Sałata", Category="Warzywa", Price=3.00m, ImageUrl="https://image.shutterstock.com/image-photo/fresh-ripe-cabbage-vegetable-isolated-260nw-2624180029.jpg" }
-            };
-        }
-
-        // --- RefreshProductCatalog: build imageList + product listview ---
-        public void RefreshProductCatalog()
-        {
-            listViewProducts.Items.Clear();
             imageList1.Images.Clear();
-            productPrices.Clear();
+            listViewProducts.Items.Clear();
 
-            using (WebClient wc = new WebClient())
+            using HttpClient client = new HttpClient();
+
+            int index = 0;
+
+            foreach (var p in products)
             {
-                int index = 0;
-                foreach (var p in products)
+                Image productImage = SystemIcons.Warning.ToBitmap(); 
+
+                if (!string.IsNullOrWhiteSpace(p.ImageUrl))
                 {
                     try
                     {
-                        if (!string.IsNullOrWhiteSpace(p.ImageUrl))
+                        
+                        byte[] bytes = await client.GetByteArrayAsync(p.ImageUrl);
+                        using (var ms = new MemoryStream(bytes))
                         {
-                            byte[] bytes = wc.DownloadData(p.ImageUrl);
-                            using (var ms = new MemoryStream(bytes))
-                            {
-                                imageList1.Images.Add(Image.FromStream(ms));
-                            }
-                        }
-                        else
-                        {
-                            imageList1.Images.Add(SystemIcons.Warning.ToBitmap());
+                            productImage = Image.FromStream(ms);
                         }
                     }
                     catch
                     {
-                        imageList1.Images.Add(SystemIcons.Warning.ToBitmap());
+                        
                     }
-
-                    var lvi = new ListViewItem(p.Name) { ImageIndex = index };
-                    lvi.SubItems.Add(p.Price.ToString("0.00"));
-                    lvi.SubItems.Add(p.Category);
-                    lvi.Tag = p; // store product reference
-                    listViewProducts.Items.Add(lvi);
-
-                    productPrices[p.Name] = p.Price;
-                    index++;
                 }
+
+                imageList1.Images.Add(productImage);
+
+                var lvi = new ListViewItem($"{p.Name} - {p.Price:0.00} zł")
+                {
+                    ImageIndex = index,
+                    Tag = p 
+                };
+
+                listViewProducts.Items.Add(lvi);
+                index++;
             }
         }
 
-        // --- Adding product to cart when selected ---
+
+
+
+
+
         private void ListViewProducts_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listViewProducts.SelectedItems.Count == 0) return;
@@ -195,11 +169,23 @@ namespace Samoobsługa
                 listViewReceipt.Items.Add(lvi);
             }
 
-            sumLabel.Text = $"Suma: {totalSum:0.00} zł";
+            decimal discountAmount = 0m;
+            if (loggedUser != null && loggedUser.CardActive)
+            {
+                discountAmount = totalSum * loggedUser.Discount / 100m;
+                labelDiscount.Text = $"Zniżka: {discountAmount:0.00} zł ({loggedUser.Discount}%)";
+            }
+            else
+            {
+                labelDiscount.Text = "Zniżka: 0.00 zł";
+            }
+
+            sumLabel.Text = $"Suma: {(totalSum - discountAmount):0.00} zł";
         }
 
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
+            /*
             if (listViewReceipt.SelectedItems.Count == 0) return;
 
             var sel = listViewReceipt.SelectedItems[0];
@@ -214,62 +200,92 @@ namespace Samoobsługa
             }
 
             RefreshReceipt();
+            */
+            MessageBox.Show("Usuwanie nie dziala bo bylo ruiboe ne fo pieczykolana(rżniete)");
         }
 
-        // --- Open admin panel (pass reference to products list) ---
         private void ButtonPanelAdmin_Click(object sender, EventArgs e)
         {
-            using (var ap = new AdminPanel(products))
-            {
-                var dr = ap.ShowDialog(this);
-                if (dr == DialogResult.OK)
-                {
-                    // Admin made changes and saved — reload from file and refresh UI
-                    LoadProductsFromFile();
-                    RefreshProductCatalog();
-                }
-            }
+            MessageBox.Show("Panel admina zostal usuniety poniewaz byl on robiony do pana ktorego pieka kolana (nie dzialal, ale za to wygladal jak gowno)");
         }
 
         private void ButtonPay_Click(object sender, EventArgs e)
         {
-            using (PaymentForm pf = new PaymentForm(this))
+            if (cart.Count == 0)
             {
-                if (pf.ShowDialog() == DialogResult.OK)
-                {
-                    SaveReceiptToFile(); // generujemy i otwieramy paragon
-                    cart.Clear();
-                    RefreshReceipt();
-                    MessageBox.Show("Płatność zakończona, paragon zapisany i otwarty.");
-                }
+                MessageBox.Show("Koszyk jest pusty!");
+                return;
             }
+
+            decimal finalSum = totalSum;
+            if (loggedUser != null && loggedUser.CardActive)
+            {
+                decimal discountAmount = totalSum * loggedUser.Discount / 100m;
+                finalSum -= discountAmount;
+            }
+
+
+            cart.Clear();
+            RefreshReceipt();
+            MessageBox.Show("Płatność zakończona:3.");
+
         }
 
-        public void SaveReceiptToFile()
+
+
+        private async void ButtonLogin_Click(object sender, EventArgs e)
         {
-            string fileName = $"paragon_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
-            using (StreamWriter sw = new StreamWriter(fileName))
+            string username = EnterNameTextbox.Text?.Trim();
+            if (string.IsNullOrEmpty(username))
             {
-                sw.WriteLine("        PARAGON FISKALNY");
-                sw.WriteLine("----------------------------------------");
-                sw.WriteLine($"Data: {DateTime.Now}");
-                sw.WriteLine("----------------------------------------");
-                foreach (var kvp in cart)
-                {
-                    sw.WriteLine($"{kvp.Key}");
-                    sw.WriteLine($"  {kvp.Value.Price:0.00} zł x {kvp.Value.Quantity}  =  {(kvp.Value.Price * kvp.Value.Quantity):0.00} zł");
-                    sw.WriteLine();
-                }
-                sw.WriteLine("----------------------------------------");
-                sw.WriteLine($"SUMA: {totalSum:0.00} zł");
-                sw.WriteLine("----------------------------------------");
-                sw.WriteLine("Dziękujemy za zakupy!");
+                MessageBox.Show("Podaj login użytkownika.");
+                return;
             }
 
-            // --- automatyczne otwarcie pliku paragonu w Notatniku ---
-            System.Diagnostics.Process.Start("notepad.exe", fileName);
+            try
+            {
+                using HttpClient client = new HttpClient(); 
+                loggedUser = await client.GetFromJsonAsync<User>(ApiBaseUrl + $"user/{username}");
+
+                if (loggedUser != null)
+                {
+                    labelLoggedAs.Text = $"Zalogowany jako: {loggedUser.Name}";
+                    RefreshReceipt();
+                }
+                else
+                {
+                    MessageBox.Show("Nie znaleziono użytkownika w API.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Błąd przy pobieraniu danych z API: " + ex.Message);
+            }
         }
 
+        private async Task RefreshLoggedUserData()
+        {
+            try
+            {
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                using HttpClient client = new HttpClient(handler);
 
+                var refreshedUser = await client.GetFromJsonAsync<User>(ApiBaseUrl + $"user/{loggedUser.Name}");
+                if (refreshedUser != null)
+                {
+                    loggedUser.CardActive = refreshedUser.CardActive;
+                    loggedUser.Discount = refreshedUser.Discount;
+                    RefreshReceipt();
+                }
+            }
+            catch
+            {
+
+            }
+        }
     }
+
+
+
 }
